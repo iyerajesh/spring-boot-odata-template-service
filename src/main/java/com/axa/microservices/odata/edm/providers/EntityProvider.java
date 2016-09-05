@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.axa.spring.odata.edm.providers;
+package com.axa.microservices.odata.edm.providers;
 
 
 import org.apache.olingo.commons.api.data.EntitySet;

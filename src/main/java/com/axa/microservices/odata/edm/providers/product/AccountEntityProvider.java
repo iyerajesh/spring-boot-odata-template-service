@@ -1,10 +1,9 @@
-/**
+																																																																																																																																																																																																																																															/**
  * 
  */
-package com.axa.spring.odata.edm.providers.product;
+package com.axa.microservices.odata.edm.providers.product;
 
 import java.util.Arrays;
-
 import java.util.List;
 
 import org.apache.olingo.commons.api.data.Entity;
@@ -24,17 +23,17 @@ import org.apache.olingo.server.api.uri.UriResource;
 import org.apache.olingo.server.api.uri.UriResourceEntitySet;
 import org.springframework.stereotype.Component;
 
-import com.axa.spring.odata.edm.providers.EntityProvider;
+import com.axa.microservices.odata.edm.providers.EntityProvider;
 
 /**
  * @author rohitghatol
  *
  */
 @Component
-public class CategoryEntityProvider implements EntityProvider {
+public class AccountEntityProvider implements EntityProvider {
 
 	// Service Namespace
-	public static final String NAMESPACE = "com.example.model";
+	public static final String NAMESPACE = "com.axa.model";
 
 	// EDM Container
 	public static final String CONTAINER_NAME = "Container";
@@ -42,12 +41,13 @@ public class CategoryEntityProvider implements EntityProvider {
 			NAMESPACE, CONTAINER_NAME);
 
 	// Entity Types Names
-	public static final String ET_CATEGORY_NAME = "Category";
-	public static final FullQualifiedName ET_CATEGORY_FQN = new FullQualifiedName(
-			NAMESPACE, ET_CATEGORY_NAME);
+	public static final String ET_PRODUCT_NAME = "Account";
+	
+	public static final FullQualifiedName ET_PRODUCT_FQN = new FullQualifiedName(
+			NAMESPACE, ET_PRODUCT_NAME);
 
 	// Entity Set Names
-	public static final String ES_CATEGORIES_NAME = "Categories";
+	public static final String ES_PRODUCTS_NAME = "Accounts";
 
 	/*
 	 * (non-Javadoc)
@@ -71,9 +71,10 @@ public class CategoryEntityProvider implements EntityProvider {
 
 		// configure EntityType
 		EntityType entityType = new EntityType();
-		entityType.setName(ET_CATEGORY_NAME);
+		entityType.setName(ET_PRODUCT_NAME);
 		entityType.setProperties(Arrays.asList(id, name, description));
 		entityType.setKey(Arrays.asList(propertyRef));
+		
 		
 
 		return entityType;
@@ -158,16 +159,12 @@ public class CategoryEntityProvider implements EntityProvider {
 	}
 
 	@Override
-	public String getEntitySetName() {		
-		return ES_CATEGORIES_NAME;
+	public String getEntitySetName() {
+		return ES_PRODUCTS_NAME;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.rohitghatol.spring.odata.edm.providers.EntityProvider#getFullyQualifiedName()
-	 */
 	@Override
 	public FullQualifiedName getFullyQualifiedName() {
-		return ET_CATEGORY_FQN;
+		return ET_PRODUCT_FQN;
 	}
-
 }

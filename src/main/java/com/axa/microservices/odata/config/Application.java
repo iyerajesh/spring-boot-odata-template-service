@@ -1,4 +1,4 @@
-package com.axa.spring.odata;
+package com.axa.microservices.odata.config;
 /*******************************************************************************
 * Licensed to the Apache Software Foundation (ASF) under one
 * or more contributor license agreements. See the NOTICE file
@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @EnableAutoConfiguration
 @Configuration
-@ComponentScan(basePackages = "com.axa.spring.odata")
+@ComponentScan(basePackages = "com.axa.microservices.odata")
 public class Application {
 
 	

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.axa.spring.odata.controller;
+package com.axa.microservices.odata.controller;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -34,7 +34,7 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.axa.spring.odata.exception.EdmException;
+import com.axa.microservices.odata.exception.EdmException;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -58,7 +58,7 @@ public class EDMController {
 	@Autowired
 	private EdmProvider edmProvider;
 
-	/** The enity collection processor. */
+	/** The entity collection processor. */
 	@Autowired
 	private EntityCollectionProcessor enityCollectionProcessor;
 

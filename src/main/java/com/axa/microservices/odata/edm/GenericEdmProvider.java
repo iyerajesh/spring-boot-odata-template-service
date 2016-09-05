@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.axa.spring.odata.edm;
+package com.axa.microservices.odata.edm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.axa.spring.odata.edm.providers.EntityProvider;
+import com.axa.microservices.odata.edm.providers.EntityProvider;
 
 @Component
 public class GenericEdmProvider extends EdmProvider {
