@@ -48,25 +48,29 @@ import org.apache.olingo.server.api.serializer.SerializerException;
 import org.apache.olingo.server.api.uri.UriInfo;
 import org.apache.olingo.server.api.uri.UriResource;
 import org.apache.olingo.server.api.uri.UriResourceEntitySet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.axa.microservices.odata.edm.providers.EntityProvider;
+import com.axa.microservices.odata.edm.providers.product.AccountEntityProvider;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class ProductEntityCollectionProcessor.
  */
 @Component
-public class GenericEntityCollectionProcessor implements
-		EntityCollectionProcessor {
+public class GenericEntityCollectionProcessor implements EntityCollectionProcessor {
 
 	@Autowired
 	private ApplicationContext ctx;
 
 	/** The odata. */
 	private OData odata;
+	
+	private static final Logger logger = LoggerFactory.getLogger(GenericEntityCollectionProcessor.class);	
 
 	// our processor is initialized with the OData context object
 	/*
@@ -94,15 +98,21 @@ public class GenericEntityCollectionProcessor implements
 	 * org.apache.olingo.server.api.uri.UriInfo,
 	 * org.apache.olingo.commons.api.format.ContentType)
 	 */
-	public void readEntityCollection(ODataRequest request,
-			ODataResponse response, UriInfo uriInfo, ContentType responseFormat)
-			throws ODataApplicationException, SerializerException {
+	public void readEntityCollection(ODataRequest request, ODataResponse response, UriInfo uriInfo,
+			ContentType responseFormat) throws ODataApplicationException, SerializerException {
 
 		// 1st we have retrieve the requested EntitySet from the uriInfo object
 		// (representation of the parsed service URI)
 		List<UriResource> resourcePaths = uriInfo.getUriResourceParts();
-		UriResourceEntitySet uriResourceEntitySet = (UriResourceEntitySet) resourcePaths
-				.get(0); // in our example, the first segment is the EntitySet
+		UriResourceEntitySet uriResourceEntitySet = (UriResourceEntitySet) resourcePaths.get(0); // in
+																									// our
+																									// example,
+																									// the
+																									// first
+																									// segment
+																									// is
+																									// the
+																									// EntitySet
 		EdmEntitySet edmEntitySet = uriResourceEntitySet.getEntitySet();
 
 		// 2nd: fetch the data from backend for this requested EntitySetName //
@@ -116,20 +126,17 @@ public class GenericEntityCollectionProcessor implements
 		// 4th: Now serialize the content: transform from the EntitySet object
 		// to InputStream
 		EdmEntityType edmEntityType = edmEntitySet.getEntityType();
-		ContextURL contextUrl = ContextURL.with().entitySet(edmEntitySet)
-				.build();
+		ContextURL contextUrl = ContextURL.with().entitySet(edmEntitySet).build();
 
-		EntityCollectionSerializerOptions opts = EntityCollectionSerializerOptions
-				.with().contextURL(contextUrl).build();
-		InputStream serializedContent = serializer.entityCollection(
-				edmEntityType, entitySet, opts);
+		EntityCollectionSerializerOptions opts = EntityCollectionSerializerOptions.with().contextURL(contextUrl)
+				.build();
+		InputStream serializedContent = serializer.entityCollection(edmEntityType, entitySet, opts);
 
 		// Finally: configure the response object: set the body, headers and
 		// status code
 		response.setContent(serializedContent);
 		response.setStatusCode(HttpStatusCode.OK.getStatusCode());
-		response.setHeader(HttpHeader.CONTENT_TYPE,
-				responseFormat.toContentTypeString());
+		response.setHeader(HttpHeader.CONTENT_TYPE, responseFormat.toContentTypeString());
 	}
 
 	/**
@@ -140,21 +147,35 @@ public class GenericEntityCollectionProcessor implements
 	 * @return data of requested entity set
 	 */
 	private EntitySet getData(UriInfo uriInfo) {
+
 		List<UriResource> resourcePaths = uriInfo.getUriResourceParts();
-		UriResourceEntitySet uriResourceEntitySet = (UriResourceEntitySet) resourcePaths
-				.get(0); // in our example, the first segment is the EntitySet
+		UriResourceEntitySet uriResourceEntitySet = (UriResourceEntitySet) resourcePaths.get(0); // in
+																									// our
+																									// example,
+																									// the
+																									// first
+																									// segment
+																									// is
+																									// the
+																									// EntitySet
 		EdmEntitySet edmEntitySet = uriResourceEntitySet.getEntitySet();
+		
+		logger.debug("EDM entity set:" + edmEntitySet.getName());
 
 		EntitySet entitySet = null;
 
-		Map<String, EntityProvider> entityProviders = ctx
-				.getBeansOfType(EntityProvider.class);
+		Map<String, EntityProvider> entityProviders = ctx.getBeansOfType(EntityProvider.class);
 
 		for (String entity : entityProviders.keySet()) {
+			
+			logger.debug("Entity provider name:" + entity);
 			EntityProvider entityProvider = entityProviders.get(entity);
-			if (entityProvider
-					.getEntityType().getName()
-					
+			
+			logger.debug("Entity name being requested:" + entityProvider.getEntityType().getName());
+			
+			
+			if (entityProvider.getEntityType().getName()
+
 					.equals(edmEntitySet.getEntityType().getName())) {
 				entitySet = entityProvider.getEntitySet(uriInfo);
 				break;

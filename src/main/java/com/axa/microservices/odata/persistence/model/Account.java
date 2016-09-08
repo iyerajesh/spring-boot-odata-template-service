@@ -33,7 +33,7 @@ public class Account implements Serializable {
 	private String name;
 
 	@Column(name = "Description")
-	private Date description;
+	private String description;
 
 	public int getId() {
 		return id;
@@ -51,13 +51,12 @@ public class Account implements Serializable {
 		this.name = name;
 	}
 
-	public Date getDescription() {
+	public String getDescription() {
 		return description;
 	}
 
-	public void setDescription(Date description) {
+	public void setDescription(String description) {
 		this.description = description;
 	}
-
 
 }

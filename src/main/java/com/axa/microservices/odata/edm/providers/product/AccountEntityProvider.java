@@ -1,6 +1,6 @@
-																																																																																																																																																																																																																																															/**
- * 
- */
+/**
+* 
+*/
 package com.axa.microservices.odata.edm.providers.product;
 
 import java.util.Arrays;
@@ -21,12 +21,17 @@ import org.apache.olingo.server.api.edm.provider.PropertyRef;
 import org.apache.olingo.server.api.uri.UriInfo;
 import org.apache.olingo.server.api.uri.UriResource;
 import org.apache.olingo.server.api.uri.UriResourceEntitySet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.axa.microservices.odata.edm.providers.EntityProvider;
+import com.axa.microservices.odata.persistence.model.Account;
+import com.axa.microservices.odata.service.IAccountService;
 
 /**
- * @author rohitghatol
+ * @author Rajesh Iyer
  *
  */
 @Component
@@ -35,35 +40,36 @@ public class AccountEntityProvider implements EntityProvider {
 	// Service Namespace
 	public static final String NAMESPACE = "com.axa.model";
 
+	private static final Logger logger = LoggerFactory.getLogger(AccountEntityProvider.class);
+
 	// EDM Container
 	public static final String CONTAINER_NAME = "Container";
-	public static final FullQualifiedName CONTAINER = new FullQualifiedName(
-			NAMESPACE, CONTAINER_NAME);
+	public static final FullQualifiedName CONTAINER = new FullQualifiedName(NAMESPACE, CONTAINER_NAME);
 
 	// Entity Types Names
 	public static final String ET_PRODUCT_NAME = "Account";
-	
-	public static final FullQualifiedName ET_PRODUCT_FQN = new FullQualifiedName(
-			NAMESPACE, ET_PRODUCT_NAME);
+
+	public static final FullQualifiedName ET_PRODUCT_FQN = new FullQualifiedName(NAMESPACE, ET_PRODUCT_NAME);
 
 	// Entity Set Names
 	public static final String ES_PRODUCTS_NAME = "Accounts";
+
+	@Autowired
+	private IAccountService accountService;
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.rohitghatol.spring.odata.edm.providers.EntityProvider#getEntityType()
+	 * com.axa.microservices.odata.edm.providers.EntityProvider#getEntityType()
 	 */
 	@Override
 	public EntityType getEntityType() {
 		// create EntityType properties
-		Property id = new Property().setName("ID").setType(
-				EdmPrimitiveTypeKind.Int32.getFullQualifiedName());
-		Property name = new Property().setName("Name").setType(
-				EdmPrimitiveTypeKind.String.getFullQualifiedName());
-		Property description = new Property().setName("Description").setType(
-				EdmPrimitiveTypeKind.String.getFullQualifiedName());
+		Property id = new Property().setName("ID").setType(EdmPrimitiveTypeKind.Int32.getFullQualifiedName());
+		Property name = new Property().setName("Name").setType(EdmPrimitiveTypeKind.String.getFullQualifiedName());
+		Property description = new Property().setName("Description")
+				.setType(EdmPrimitiveTypeKind.String.getFullQualifiedName());
 
 		// create PropertyRef for Key element
 		PropertyRef propertyRef = new PropertyRef();
@@ -74,8 +80,6 @@ public class AccountEntityProvider implements EntityProvider {
 		entityType.setName(ET_PRODUCT_NAME);
 		entityType.setProperties(Arrays.asList(id, name, description));
 		entityType.setKey(Arrays.asList(propertyRef));
-		
-		
 
 		return entityType;
 	}
@@ -84,15 +88,22 @@ public class AccountEntityProvider implements EntityProvider {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.rohitghatol.spring.odata.edm.providers.EntityProvider#getEntitySet
+	 * com.axa.microservices.odata.edm.providers.EntityProvider#getEntitySet
 	 * (org.apache.olingo.server.api.uri.UriInfo)
 	 */
 	@Override
 	public EntitySet getEntitySet(UriInfo uriInfo) {
 		List<UriResource> resourcePaths = uriInfo.getUriResourceParts();
 
-		UriResourceEntitySet uriResourceEntitySet = (UriResourceEntitySet) resourcePaths
-				.get(0); // in our example, the first segment is the EntitySet
+		UriResourceEntitySet uriResourceEntitySet = (UriResourceEntitySet) resourcePaths.get(0); // in
+																									// our
+																									// example,
+																									// the
+																									// first
+																									// segment
+																									// is
+																									// the
+																									// EntitySet
 
 		EdmEntitySet edmEntitySet = uriResourceEntitySet.getEntitySet();
 
@@ -113,50 +124,22 @@ public class AccountEntityProvider implements EntityProvider {
 		EntitySet entitySet = new EntitySetImpl();
 
 		List<Entity> entityList = entitySet.getEntities();
+		logger.debug("Size of the entities:" + entityList.size());
 
-		// add some sample product entities
-		entityList
-				.add(new EntityImpl()
-						.addProperty(
-								new PropertyImpl(null, "ID",
-										ValueType.PRIMITIVE, 1))
-						.addProperty(
-								new PropertyImpl(null, "Name",
-										ValueType.PRIMITIVE,
-										"Notebook Basic 15"))
-						.addProperty(
-								new PropertyImpl(null, "Description",
-										ValueType.PRIMITIVE,
-										"Notebook Basic, 1.7GHz - 15 XGA - 1024MB DDR2 SDRAM - 40GB")));
+		List<Account> accounts = accountService.findAll();
+		
+		logger.debug("The number of accounts from the database:" + accounts.size());
 
-		entityList
-				.add(new EntityImpl()
-						.addProperty(
-								new PropertyImpl(null, "ID",
-										ValueType.PRIMITIVE, 2))
-						.addProperty(
-								new PropertyImpl(null, "Name",
-										ValueType.PRIMITIVE, "1UMTS PDA"))
-						.addProperty(
-								new PropertyImpl(null, "Description",
-										ValueType.PRIMITIVE,
-										"Ultrafast 3G UMTS/HSDPA Pocket PC, supports GSM network")));
+		for (Account account : accounts) {
 
-		entityList
-				.add(new EntityImpl()
-						.addProperty(
-								new PropertyImpl(null, "ID",
-										ValueType.PRIMITIVE, 3))
-						.addProperty(
-								new PropertyImpl(null, "Name",
-										ValueType.PRIMITIVE, "Ergo Screen"))
-						.addProperty(
-								new PropertyImpl(null, "Description",
-										ValueType.PRIMITIVE,
-										"17 Optimum Resolution 1024 x 768 @ 85Hz, resolution 1280 x 960")));
-
+			entityList.add(new EntityImpl()
+					.addProperty(new PropertyImpl(null, "ID", ValueType.PRIMITIVE, account.getId()))
+					.addProperty(new PropertyImpl(null, "Name", ValueType.PRIMITIVE, account.getName()))
+					.addProperty(new PropertyImpl(null, "Description", ValueType.PRIMITIVE, account.getDescription())));
+		}
 		return entitySet;
 	}
+	
 
 	@Override
 	public String getEntitySetName() {
